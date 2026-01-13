@@ -1,0 +1,18 @@
+{
+  "@@locale": "tr",
+  "home": "Ana Sayfa",
+  "collections": "Koleksiyonlar",
+  "profile": "Profil",
+  "settings": "Ayarlar",
+  "studySettings": "Çalışma Ayarları",
+  "appearance": "Görünüm",
+  "darkMode": "Karanlık Mod",
+  "about": "Hakkında",
+  "version": "Sürüm",
+  "language": "Dil",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "create": "Oluştur",
+  "delete": "Sil",
+  "edit": "Düzenle"
+}
