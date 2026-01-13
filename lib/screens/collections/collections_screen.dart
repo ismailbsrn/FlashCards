@@ -1,3 +1,4 @@
+import 'package:flashcards2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -74,8 +75,9 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
     );
     setState(() {
       _selectedCollections.clear();
-      _selectedCollections
-          .addAll(collectionProvider.collections.map((c) => c.id));
+      _selectedCollections.addAll(
+        collectionProvider.collections.map((c) => c.id),
+      );
     });
   }
 
@@ -86,22 +88,23 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
   }
 
   Future<void> _bulkDelete() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Collections'),
+        title: Text(l10n.deleteCollections),
         content: Text(
-          'Are you sure you want to delete ${_selectedCollections.length} collection(s)? This action cannot be undone.',
+          l10n.deleteCollectionsConfirm(_selectedCollections.length),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -124,8 +127,8 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
         _exitSelectionMode();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Collections deleted successfully'),
+            SnackBar(
+              content: Text(l10n.collectionsDeletedSuccessfully),
               backgroundColor: Colors.green,
             ),
           );
@@ -135,6 +138,7 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
   }
 
   Future<void> _bulkExport() async {
+    final l10n = AppLocalizations.of(context)!;
     final importExportService = ImportExportService();
     int successCount = 0;
     int errorCount = 0;
@@ -154,7 +158,10 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Exported $successCount collection(s)${errorCount > 0 ? ' ($errorCount failed)' : ''}',
+            l10n.exportedCollections(
+              successCount,
+              errorCount > 0 ? ' ($errorCount failed)' : '',
+            ),
           ),
           backgroundColor: errorCount == 0 ? Colors.green : Colors.orange,
         ),
@@ -164,6 +171,8 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Consumer<CollectionProvider>(
       builder: (context, collectionProvider, _) {
         if (collectionProvider.isLoading) {
@@ -178,14 +187,11 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
                 const Icon(Icons.error, size: 64, color: Colors.red),
                 const SizedBox(height: 16),
                 Text(
-                  'Error: ${collectionProvider.error}',
+                  l10n.errorWithMessage(collectionProvider.error!),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _loadData,
-                  child: const Text('Retry'),
-                ),
+                ElevatedButton(onPressed: _loadData, child: Text(l10n.retry)),
               ],
             ),
           );
@@ -203,11 +209,11 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No collections yet',
+                  l10n.noCollectionsYet,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 8),
-                const Text('Create your first collection to get started'),
+                Text(l10n.createFirstCollection),
               ],
             ),
           );
@@ -229,8 +235,10 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
                 final isSelected = _selectedCollections.contains(collection.id);
 
                 return Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 4,
+                    horizontal: 8,
+                  ),
                   color: isSelected
                       ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
                       : null,
@@ -241,12 +249,14 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
                             onChanged: (_) => _toggleSelection(collection.id),
                           )
                         : CircleAvatar(
-                            backgroundColor: collectionColor ??
+                            backgroundColor:
+                                collectionColor ??
                                 Theme.of(context).colorScheme.primary,
                             child: Icon(
                               Icons.collections_bookmark,
-                              color:
-                                  collectionColor != null ? Colors.white : null,
+                              color: collectionColor != null
+                                  ? Colors.white
+                                  : null,
                             ),
                           ),
                     title: Text(collection.name),
@@ -282,8 +292,9 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    CollectionDetailScreen(collection: collection),
+                                builder: (_) => CollectionDetailScreen(
+                                  collection: collection,
+                                ),
                               ),
                             )
                             .then((_) => _loadData());
@@ -307,39 +318,58 @@ class _CollectionsListScreenState extends State<CollectionsListScreen> {
                       TextButton.icon(
                         onPressed: _exitSelectionMode,
                         icon: const Icon(Icons.close),
-                        label: Text('Cancel (${_selectedCollections.length})'),
+                        label: Text(
+                          l10n.cancelWithCount(_selectedCollections.length),
+                        ),
                       ),
                       IconButton(
                         onPressed: () {
-                          final collectionProvider = Provider.of<CollectionProvider>(
-                            context,
-                            listen: false,
-                          );
-                          if (_selectedCollections.length == collectionProvider.collections.length) {
+                          final collectionProvider =
+                              Provider.of<CollectionProvider>(
+                                context,
+                                listen: false,
+                              );
+                          if (_selectedCollections.length ==
+                              collectionProvider.collections.length) {
                             _unselectAll();
                           } else {
                             _selectAll();
                           }
                         },
                         icon: Icon(
-                          _selectedCollections.length == Provider.of<CollectionProvider>(context, listen: false).collections.length
+                          _selectedCollections.length ==
+                                  Provider.of<CollectionProvider>(
+                                    context,
+                                    listen: false,
+                                  ).collections.length
                               ? Icons.deselect
                               : Icons.select_all,
                         ),
-                        tooltip: _selectedCollections.length == Provider.of<CollectionProvider>(context, listen: false).collections.length
-                            ? 'Unselect all'
-                            : 'Select all',
+                        tooltip:
+                            _selectedCollections.length ==
+                                Provider.of<CollectionProvider>(
+                                  context,
+                                  listen: false,
+                                ).collections.length
+                            ? l10n.unselectAll
+                            : l10n.selectAll,
                       ),
                       IconButton(
-                        onPressed: _selectedCollections.isEmpty ? null : _bulkExport,
+                        onPressed: _selectedCollections.isEmpty
+                            ? null
+                            : _bulkExport,
                         icon: const Icon(Icons.download),
-                        tooltip: 'Export collections',
+                        tooltip: l10n.exportCollections,
                       ),
                       IconButton(
-                        onPressed: _selectedCollections.isEmpty ? null : _bulkDelete,
+                        onPressed: _selectedCollections.isEmpty
+                            ? null
+                            : _bulkDelete,
                         icon: const Icon(Icons.delete),
-                        color: _selectedCollections.isEmpty ? Colors.grey : Colors.red,
-                        tooltip: 'Delete selected',
+                        color: _selectedCollections.isEmpty
+                            ? Colors.grey
+                            : Colors.red,
+                        tooltip: l10n.deleteSelected,
                       ),
                     ],
                   ),

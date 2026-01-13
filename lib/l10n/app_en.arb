@@ -59,5 +59,462 @@
   "edit": "Edit",
   "@edit": {
     "description": "Edit button text"
+  },
+  "welcomeBack": "Welcome Back!",
+  "@welcomeBack": {
+    "description": "Welcome back text"
+  },
+  "studyNow": "Study Now",
+  "@studyNow": {
+    "description": "Study now button text"
+  },
+  "totalDecks": "Total Decks",
+  "@totalDecks": {
+    "description": "Total decks label"
+  },
+  "totalCards": "Total Cards",
+  "@totalCards": {
+    "description": "Total cards label"
+  },
+  "dueToday": "Due Today",
+  "@dueToday": {
+    "description": "Due today label"
+  },
+  "studiedToday": "Studied Today",
+  "@studiedToday": {
+    "description": "Studied today label"
+  },
+  "studyActivity": "Study Activity (Last 30 Days)",
+  "@studyActivity": {
+    "description": "Study activity label"
+  },
+  "yourDecks": "Your Decks",
+  "@yourDecks": {
+    "description": "Your decks label"
+  },
+  "viewAllCollections": "View All Collections",
+  "@viewAllCollections": {
+    "description": "View all collections button text"
+  },
+  "viewAll": "View All",
+  "@viewAll": {
+    "description": "View all button text"
+  },
+  "noDecks": "No Decks",
+  "@noDecks": {
+    "description": "No decks label"
+  },
+  "createDeck": "Create Deck",
+  "@createDeck": {
+    "description": "Create deck button text"
+  },
+  "selectStudyDecks": "Select Study Decks",
+  "@selectStudyDecks": {
+    "description": "Select study decks button text"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "noCollections": "No Collections",
+  "@noCollections": {
+    "description": "No collections label"
+  },
+  "createCollectionToStartStudying": "Create a collection to start studying",
+  "@createCollectionToStartStudying": {
+    "description": "Create collection to start studying label"
+  },
+  "studyAllDueCards": "Study All Due Cards",
+  "@studyAllDueCards": {
+    "description": "Study all due cards button text"
+  },
+  "filters": "Filters",
+  "@filters": {
+    "description": "Filters label"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search label"
+  },
+  "all": "All",
+  "@all": {
+    "description": "All label"
+  },
+  "due": "Due",
+  "@due": {
+    "description": "Due label"
+  },
+  "studied": "Studied",
+  "@studied": {
+    "description": "Studied label"
+  },
+  "filterByTags": "Filter by Tags",
+  "@filterByTags": {
+    "description": "Filter by tags label"
+  },
+  "labelNew": "New",
+  "@labelNew": {
+    "description": "New label"
+  },
+  "learning": "Learning",
+  "@learning": {
+    "description": "Learning label"
+  },
+  "filterByCardType": "Filter by Card Type",
+  "@filterByCardType": {
+    "description": "Filter by card type label"
+  },
+  "pleaseSelectAtLeastOneCollection": "Please select at least one collection",
+  "@pleaseSelectAtLeastOneCollection": {
+    "description": "Please select at least one collection label"
+  },
+  "cardCountWithFilter": "{count} {filter} {count, plural, =1{card} other{cards}}",
+  "@cardCountWithFilter": {
+    "description": "Card count with filter label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "filter": {
+        "type": "String"
+      }
+    }
+  },
+  "noCardsWithFilter": "No {filter} cards",
+  "@noCardsWithFilter": {
+    "description": "No cards with filter label",
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "displayNameOptional": "Display Name (Optional)",
+  "forgotPasswordQuestion": "Forgot Password?",
+  "forgotPassword": "Forgot Password",
+  "sendResetLink": "Send Reset Link",
+  "backToLogin": "Back to Login",
+  "resetYourPassword": "Reset Your Password",
+  "enterEmailForReset": "Enter your email address and we'll send you a link to reset your password.",
+  "resetEmailSent": "If an account exists with this email, you will receive a password reset link.",
+  "pleaseEnterEmail": "Please enter your email",
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "pleaseEnterPassword": "Please enter your password",
+  "pleaseEnterAPassword": "Please enter a password",
+  "pleaseConfirmPassword": "Please confirm your password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "loginFailed": "Login failed",
+  "registrationFailed": "Registration failed",
+  "dontHaveAccount": "Don't have an account? Register",
+  "enterYourEmail": "Enter your email",
+  "noUserData": "No user data available",
+  "displayName": "Display Name",
+  "notSet": "Not set",
+  "user": "User",
+  "memberSince": "Member Since",
+  "lastSyncLabel": "Last Sync",
+  "pendingSyncItems": "Pending Sync Items",
+  "loadingText": "Loading...",
+  "itemsCount": "{count} items",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingItemsCount": "{count} pending items",
+  "@pendingItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clearSyncQueue": "Clear Sync Queue",
+  "clearSyncQueueConfirm": "Are you sure you want to clear all pending sync items? This action cannot be undone.",
+  "removePendingSyncItems": "Remove all pending sync items",
+  "syncQueueCleared": "Sync queue cleared",
+  "changePassword": "Change Password",
+  "syncNow": "Sync Now",
+  "syncCompleted": "Sync completed successfully",
+  "syncFailed": "Sync failed: {error}",
+  "@syncFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Logout",
+  "logoutConfirm": "Are you sure you want to logout?",
+  "clear": "Clear",
+  "deleteCards": "Delete Cards",
+  "deleteCardsConfirm": "Are you sure you want to delete {count} card(s)? This action cannot be undone.",
+  "@deleteCardsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cardsDeletedSuccessfully": "Cards deleted successfully",
+  "deleteCollection": "Delete Collection",
+  "deleteCollectionConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@deleteCollectionConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editCollection": "Edit Collection",
+  "exportTooltip": "Export",
+  "exportedTo": "Exported to {path}",
+  "@exportedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Export failed: {error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noCardsYet": "No cards yet",
+  "addFirstFlashcard": "Add your first flashcard",
+  "searchCards": "Search cards...",
+  "cardsOfTotal": "{filtered} of {total} cards",
+  "@cardsOfTotal": {
+    "placeholders": {
+      "filtered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noCardsFound": "No cards found",
+  "tryDifferentSearch": "Try a different search term",
+  "deleteCard": "Delete Card",
+  "areYouSure": "Are you sure?",
+  "study": "Study",
+  "cancelWithCount": "Cancel ({count})",
+  "@cancelWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unselectAll": "Unselect all",
+  "selectAll": "Select all",
+  "deleteSelected": "Delete selected",
+  "name": "Name",
+  "description": "Description",
+  "descriptionOptional": "Description (Optional)",
+  "tags": "Tags",
+  "addTag": "Add tag",
+  "color": "Color",
+  "noCollectionsYet": "No collections yet",
+  "createFirstCollection": "Create your first collection to get started",
+  "deleteCollections": "Delete Collections",
+  "deleteCollectionsConfirm": "Are you sure you want to delete {count} collection(s)? This action cannot be undone.",
+  "@deleteCollectionsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionsDeletedSuccessfully": "Collections deleted successfully",
+  "exportCollections": "Export collections",
+  "exportedCollections": "Exported {success} collection(s){failed}",
+  "@exportedCollections": {
+    "placeholders": {
+      "success": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "String"
+      }
+    }
+  },
+  "studyCollection": "Study Collection",
+  "cardsLeft": "{count} cards left",
+  "@cardsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "greatJob": "Great job!",
+  "cardsReviewedToday": "You've reviewed {count} cards today",
+  "@cardsReviewedToday": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "Done",
+  "noCardsToStudy": "No cards to study",
+  "question": "Question",
+  "answer": "Answer",
+  "tapToReveal": "Tap to reveal",
+  "fromCollection": "From: {name}",
+  "@fromCollection": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timeSeconds": "Time: {seconds}s",
+  "@timeSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "howWellDidYouKnow": "How well did you know this?",
+  "wrong": "Wrong",
+  "hard": "Hard",
+  "good": "Good",
+  "easy": "Easy",
+  "errorWithMessage": "Error: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "createCollection": "Create Collection",
+  "lightMode": "Light Mode",
+  "syncTooltip": "Sync",
+  "importCollections": "Import Collections",
+  "importedCollections": "Imported {collections} collection(s) with {cards} card(s){failed}",
+  "@importedCollections": {
+    "placeholders": {
+      "collections": {
+        "type": "int"
+      },
+      "cards": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "String"
+      }
+    }
+  },
+  "importFailed": "Import failed: {error}",
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "start": "Start",
+  "noMatchingFilters": "No collections match filters",
+  "tryAdjustingFilters": "Try adjusting your filters",
+  "studyDecksCount": "Study {count} {count, plural, =1{deck} other{decks}}",
+  "@studyDecksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "editProfile": "Edit Profile",
+  "updateYourInfo": "Update Your Information",
+  "changeDisplayOrEmail": "Change your display name or email address",
+  "enterDisplayName": "Enter your display name",
+  "profileUpdatedSuccessfully": "Profile updated successfully!",
+  "failedToUpdateProfile": "Failed to update profile",
+  "emailVerificationRequired": "Email Verification Required",
+  "emailVerificationMessage": "Your email has been changed. Please check your new email for a verification link, then login again.",
+  "ok": "OK",
+  "saveChanges": "Save Changes",
+  "displayNameMinLength": "Display name must be at least 2 characters",
+  "emailChangeWarning": "Changing your email will require verification. You will be logged out and must verify your new email before logging in again.",
+  "changeYourPassword": "Change Your Password",
+  "enterCurrentAndNewPassword": "Enter your current password and choose a new one",
+  "currentPassword": "Current Password",
+  "enterCurrentPassword": "Enter your current password",
+  "newPassword": "New Password",
+  "enterNewPassword": "Enter your new password",
+  "confirmNewPassword": "Confirm New Password",
+  "confirmYourNewPassword": "Confirm your new password",
+  "pleaseEnterCurrentPassword": "Please enter your current password",
+  "pleaseEnterNewPassword": "Please enter a new password",
+  "passwordMinLength8": "Password must be at least 8 characters",
+  "newPasswordMustBeDifferent": "New password must be different from current password",
+  "pleaseConfirmNewPassword": "Please confirm your new password",
+  "passwordChangedSuccessfully": "Password changed successfully!",
+  "failedToChangePassword": "Failed to change password",
+  "passwordLengthInfo": "Password must be at least 8 characters long",
+  "failedToLoadSettings": "Failed to load settings",
+  "maxReviewsPerDay": "Maximum Reviews Per Day",
+  "cardsCount": "{count} cards",
+  "@cardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maxNewCardsPerDay": "Maximum New Cards Per Day",
+  "showAnswerTimer": "Show Answer Timer",
+  "displayTimeTakenToAnswer": "Display time taken to answer",
+  "showIntervalButtons": "Show Interval Buttons",
+  "displayNextReviewIntervals": "Display next review intervals under buttons",
+  "useDarkTheme": "Use dark theme",
+  "account": "Account",
+  "never": "Never",
+  "flashcardsApp": "Flashcards App",
+  "offlineFirstFlashcardApp": "An offline-first flashcard application",
+  "value": "Value",
+  "justNow": "Just now",
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
+
+

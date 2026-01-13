@@ -1,3 +1,4 @@
+import 'package:flashcards2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -15,7 +16,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _authService = AuthService();
-  
+
   bool _isLoading = false;
   String? _errorMessage;
   String? _successMessage;
@@ -44,6 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() {
       _isLoading = true;
@@ -60,19 +62,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         if (result['success']) {
           await authProvider.reloadUser();
-          
+
           setState(() {
-            _successMessage = 'Profile updated successfully!';
+            _successMessage = l10n.profileUpdatedSuccessfully;
             _isLoading = false;
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile updated successfully!'),
+            SnackBar(
+              content: Text(l10n.profileUpdatedSuccessfully),
               backgroundColor: Colors.green,
             ),
           );
-          
+
           Future.delayed(const Duration(seconds: 1), () {
             if (mounted) {
               Navigator.of(context).pop();
@@ -85,7 +87,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           await _showEmailVerificationDialog();
         } else {
           setState(() {
-            _errorMessage = result['error'] ?? 'Failed to update profile';
+            _errorMessage = result['error'] ?? l10n.failedToUpdateProfile;
             _isLoading = false;
           });
         }
@@ -102,27 +104,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _showEmailVerificationDialog() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    
+    final l10n = AppLocalizations.of(context)!;
+
     await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Email Verification Required'),
-        content: const Text(
-          'Your email has been changed. Please check your new email for a verification link, then login again.',
-        ),
+        title: Text(l10n.emailVerificationRequired),
+        content: Text(l10n.emailVerificationMessage),
         actions: [
           ElevatedButton(
             onPressed: () async {
               await authProvider.logout();
               if (mounted) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/login',
-                  (route) => false,
-                );
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil('/login', (route) => false);
               }
             },
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -131,11 +131,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(l10n.editProfile), elevation: 0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -168,19 +167,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 32),
 
                 Text(
-                  'Update Your Information',
+                  l10n.updateYourInfo,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
 
                 Text(
-                  'Change your display name or email address',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                  l10n.changeDisplayOrEmail,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
@@ -188,8 +187,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextFormField(
                   controller: _displayNameController,
                   decoration: InputDecoration(
-                    labelText: 'Display Name',
-                    hintText: 'Enter your display name',
+                    labelText: l10n.displayName,
+                    hintText: l10n.enterDisplayName,
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -200,7 +199,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value != null && value.isNotEmpty && value.length < 2) {
-                      return 'Display name must be at least 2 characters';
+                      return l10n.displayNameMinLength;
                     }
                     return null;
                   },
@@ -210,8 +209,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
+                    labelText: l10n.email,
+                    hintText: l10n.enterYourEmail,
                     prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -224,10 +223,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   onFieldSubmitted: (_) => _saveProfile(),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -243,11 +242,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.warning_amber, color: Colors.orange[700], size: 20),
+                      Icon(
+                        Icons.warning_amber,
+                        color: Colors.orange[700],
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Changing your email will require verification. You will be logged out and must verify your new email before logging in again.',
+                          l10n.emailChangeWarning,
                           style: TextStyle(
                             color: Colors.orange[900],
                             fontSize: 12,
@@ -320,9 +323,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text(
-                          'Save Changes',
-                          style: TextStyle(
+                      : Text(
+                          l10n.saveChanges,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

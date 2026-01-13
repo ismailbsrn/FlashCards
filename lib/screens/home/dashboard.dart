@@ -1,3 +1,4 @@
+import 'package:flashcards2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -10,14 +11,15 @@ import '../study/study_selection_screen.dart';
 
 class DashboardTab extends StatefulWidget {
   final VoidCallback? onViewAllCollections;
-  
+
   const DashboardTab({super.key, this.onViewAllCollections});
 
   @override
   State<DashboardTab> createState() => DashboardTabState();
 }
 
-class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClientMixin {
+class DashboardTabState extends State<DashboardTab>
+    with AutomaticKeepAliveClientMixin {
   final CardRepository _cardRepository = CardRepository();
   final ReviewLogRepository _reviewLogRepository = ReviewLogRepository();
   int _totalCards = 0;
@@ -25,10 +27,10 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
   int _studiedToday = 0;
   bool _isLoadingStats = false;
   Map<String, int> _reviewHistory = {};
-  
+
   @override
   bool get wantKeepAlive => true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -39,27 +41,37 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
 
   Future<void> loadData() async {
     if (_isLoadingStats) return;
-    
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final collectionProvider = Provider.of<CollectionProvider>(context, listen: false);
-    
+    final collectionProvider = Provider.of<CollectionProvider>(
+      context,
+      listen: false,
+    );
+
     if (authProvider.currentUser != null) {
       setState(() => _isLoadingStats = true);
-      
+
       await collectionProvider.loadCollections(authProvider.currentUser!.id);
-      
-      final totalCards = await _cardRepository.getTotalCardCount(authProvider.currentUser!.id);
-      final dueCards = await _cardRepository.getDueCardCount(authProvider.currentUser!.id);
-      final studiedToday = await _reviewLogRepository.getReviewCountToday(authProvider.currentUser!.id);
-      
+
+      final totalCards = await _cardRepository.getTotalCardCount(
+        authProvider.currentUser!.id,
+      );
+      final dueCards = await _cardRepository.getDueCardCount(
+        authProvider.currentUser!.id,
+      );
+      final studiedToday = await _reviewLogRepository.getReviewCountToday(
+        authProvider.currentUser!.id,
+      );
+
       final endDate = DateTime.now();
       final startDate = endDate.subtract(const Duration(days: 29));
-      final reviewHistory = await _reviewLogRepository.getReviewCountByDateRange(
-        authProvider.currentUser!.id,
-        startDate,
-        endDate,
-      );
-      
+      final reviewHistory = await _reviewLogRepository
+          .getReviewCountByDateRange(
+            authProvider.currentUser!.id,
+            startDate,
+            endDate,
+          );
+
       if (mounted) {
         setState(() {
           _totalCards = totalCards;
@@ -75,7 +87,8 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+    final l10n = AppLocalizations.of(context)!;
+
     return Consumer<CollectionProvider>(
       builder: (context, collectionProvider, _) {
         if (collectionProvider.isLoading) {
@@ -94,10 +107,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: loadData,
-                  child: const Text('Retry'),
-                ),
+                ElevatedButton(onPressed: loadData, child: const Text('Retry')),
               ],
             ),
           );
@@ -114,7 +124,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome Back!',
+                  l10n.welcomeBack,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -123,14 +133,16 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
 
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const StudySelectionScreen(),
-                      ),
-                    ).then((_) => loadData());
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => const StudySelectionScreen(),
+                          ),
+                        )
+                        .then((_) => loadData());
                   },
                   icon: const Icon(Icons.play_arrow),
-                  label: const Text('Study Now'),
+                  label: Text(l10n.studyNow),
                 ),
                 const SizedBox(height: 24),
 
@@ -144,28 +156,28 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                   children: [
                     _buildStatCard(
                       context,
-                      'Total Decks',
+                      l10n.totalDecks,
                       collections.length.toString(),
                       Icons.collections_bookmark,
                       Colors.blue,
                     ),
                     _buildStatCard(
                       context,
-                      'Total Cards',
+                      l10n.totalCards,
                       _totalCards.toString(),
                       Icons.style,
                       Colors.purple,
                     ),
                     _buildStatCard(
                       context,
-                      'Due Today',
+                      l10n.dueToday,
                       _dueCards.toString(),
                       Icons.today,
                       Colors.orange,
                     ),
                     _buildStatCard(
                       context,
-                      'Studied',
+                      l10n.studiedToday,
                       _studiedToday.toString(),
                       Icons.check_circle,
                       Colors.green,
@@ -176,7 +188,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
 
                 if (_reviewHistory.isNotEmpty) ...[
                   Text(
-                    'Study Activity (Last 30 Days)',
+                    l10n.studyActivity,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -195,7 +207,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Your Decks',
+                      l10n.yourDecks,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -203,7 +215,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                     if (collections.isNotEmpty)
                       TextButton(
                         onPressed: widget.onViewAllCollections,
-                        child: const Text('View All'),
+                        child: Text(l10n.viewAll),
                       ),
                   ],
                 ),
@@ -223,7 +235,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'No decks yet',
+                              l10n.noDecks,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[600],
@@ -231,7 +243,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              'Create a deck to get started',
+                              l10n.createDeck,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[500],
@@ -245,18 +257,26 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                 else
                   ...collections.take(5).map((collection) {
                     final collectionColor = collection.color != null
-                        ? Color(int.parse(collection.color!.replaceFirst('#', '0xff')))
+                        ? Color(
+                            int.parse(
+                              collection.color!.replaceFirst('#', '0xff'),
+                            ),
+                          )
                         : Colors.blue;
-                    
+
                     return Card(
                       margin: const EdgeInsets.only(bottom: 8),
                       child: InkWell(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => CollectionDetailScreen(collection: collection),
-                            ),
-                          ).then((_) => loadData());
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (_) => CollectionDetailScreen(
+                                    collection: collection,
+                                  ),
+                                ),
+                              )
+                              .then((_) => loadData());
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -299,12 +319,17 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                                     if (collection.tags.isNotEmpty)
                                       Wrap(
                                         spacing: 4,
-                                        children: collection.tags.take(2).map((tag) {
+                                        children: collection.tags.take(2).map((
+                                          tag,
+                                        ) {
                                           return Chip(
                                             label: Text(tag),
-                                            labelStyle: const TextStyle(fontSize: 10),
+                                            labelStyle: const TextStyle(
+                                              fontSize: 10,
+                                            ),
                                             padding: EdgeInsets.zero,
-                                            visualDensity: VisualDensity.compact,
+                                            visualDensity:
+                                                VisualDensity.compact,
                                           );
                                         }).toList(),
                                       ),
@@ -325,7 +350,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                       child: TextButton(
                         onPressed: widget.onViewAllCollections,
                         child: Text(
-                          'View All ${collections.length} Decks',
+                          l10n.viewAllCollections,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -368,10 +393,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
                 ),
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -384,14 +406,14 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
   Widget _buildHeatmap() {
     final endDate = DateTime.now();
     final startDate = endDate.subtract(const Duration(days: 29));
-    
+
     final days = <Widget>[];
-    
+
     for (int i = 0; i < 30; i++) {
       final date = startDate.add(Duration(days: i));
       final dateStr = DateFormat('yyyy-MM-dd').format(date);
       final count = _reviewHistory[dateStr] ?? 0;
-      
+
       days.add(
         Tooltip(
           message: '${DateFormat('MMM d').format(date)}\n$count reviews',
@@ -421,15 +443,17 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
           children: [
             const Text('Less', style: TextStyle(fontSize: 12)),
             const SizedBox(width: 8),
-            ...[0, 1, 5, 10, 20].map((count) => Container(
-                  width: 16,
-                  height: 16,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(
-                    color: _getHeatmapColor(count),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                )),
+            ...[0, 1, 5, 10, 20].map(
+              (count) => Container(
+                width: 16,
+                height: 16,
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: BoxDecoration(
+                  color: _getHeatmapColor(count),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
             const SizedBox(width: 8),
             const Text('More', style: TextStyle(fontSize: 12)),
           ],
@@ -440,7 +464,7 @@ class DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClien
 
   Color _getHeatmapColor(int count) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     if (count == 0) {
       return isDark ? Colors.grey[800]! : Colors.grey[200]!;
     }

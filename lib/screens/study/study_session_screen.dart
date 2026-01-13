@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flashcards2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/study_provider.dart';
@@ -21,7 +22,6 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
   DateTime? _cardStartTime;
   Duration? _lastAnswerDuration;
   String? _lastCardId;
-  
 
   @override
   void initState() {
@@ -81,9 +81,13 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.collectionId != null ? 'Study Collection' : 'Study'),
+        title: Text(
+          widget.collectionId != null ? l10n.studyCollection : l10n.study,
+        ),
         actions: [
           Consumer<StudyProvider>(
             builder: (context, studyProvider, _) {
@@ -91,7 +95,7 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: Text(
-                    '${studyProvider.remainingCards} cards left',
+                    l10n.cardsLeft(studyProvider.remainingCards),
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -113,11 +117,11 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                 children: [
                   const Icon(Icons.error, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
-                  Text('Error: ${studyProvider.error}'),
+                  Text(l10n.errorWithMessage(studyProvider.error!)),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadSession,
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -132,18 +136,18 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                   const Icon(Icons.celebration, size: 100, color: Colors.green),
                   const SizedBox(height: 24),
                   Text(
-                    'Great job!',
+                    l10n.greatJob,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'You\'ve reviewed ${studyProvider.reviewedToday} cards today',
+                    l10n.cardsReviewedToday(studyProvider.reviewedToday),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Done'),
+                    child: Text(l10n.done),
                   ),
                 ],
               ),
@@ -152,7 +156,7 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
 
           final card = studyProvider.currentCard;
           if (card == null) {
-            return const Center(child: Text('No cards to study'));
+            return Center(child: Text(l10n.noCardsToStudy));
           }
 
           _checkCardChange(card.id);
@@ -178,8 +182,10 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                               _stopTimer();
                               studyProvider.toggleAnswer();
                             },
-                          child: TweenAnimationBuilder<double>(
-                        key: ValueKey('${studyProvider.currentCard?.id}_${studyProvider.showAnswer}'),
+                      child: TweenAnimationBuilder<double>(
+                        key: ValueKey(
+                          '${studyProvider.currentCard?.id}_${studyProvider.showAnswer}',
+                        ),
                         tween: Tween<double>(
                           begin: 0,
                           end: studyProvider.showAnswer ? pi : 0,
@@ -207,25 +213,34 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Builder(builder: (context) {
-                                        final collectionName = studyProvider.getCurrentCollectionName();
-                                        if (collectionName == null || collectionName.isEmpty) return const SizedBox.shrink();
-                                        return Padding(
-                                          padding: const EdgeInsets.only(bottom: 8.0),
-                                          child: Text(
-                                            'From: $collectionName',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey[700],
-                                              fontWeight: FontWeight.w500,
+                                      Builder(
+                                        builder: (context) {
+                                          final collectionName = studyProvider
+                                              .getCurrentCollectionName();
+                                          if (collectionName == null ||
+                                              collectionName.isEmpty)
+                                            return const SizedBox.shrink();
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 8.0,
                                             ),
-                                          ),
-                                        );
-                                      }),
+                                            child: Text(
+                                              l10n.fromCollection(
+                                                collectionName,
+                                              ),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[700],
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
                                       if (isFront) ...[
-                                        const Text(
-                                          'Question',
-                                          style: TextStyle(
+                                        Text(
+                                          l10n.question,
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             color: Colors.grey,
                                             fontWeight: FontWeight.bold,
@@ -238,18 +253,18 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                                           textAlign: TextAlign.center,
                                         ),
                                         const SizedBox(height: 48),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.touch_app,
                                               color: Colors.grey,
                                             ),
-                                            SizedBox(width: 8),
+                                            const SizedBox(width: 8),
                                             Text(
-                                              'Tap to reveal',
-                                              style: TextStyle(
+                                              l10n.tapToReveal,
+                                              style: const TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 14,
                                               ),
@@ -257,9 +272,9 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                                           ],
                                         ),
                                       ] else ...[
-                                        const Text(
-                                          'Answer',
-                                          style: TextStyle(
+                                        Text(
+                                          l10n.answer,
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             color: Colors.grey,
                                             fontWeight: FontWeight.bold,
@@ -312,7 +327,9 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                               padding: const EdgeInsets.only(bottom: 8),
                               child: Text(
                                 _lastAnswerDuration != null
-                                    ? 'Time: ${_lastAnswerDuration!.inSeconds}s'
+                                    ? l10n.timeSeconds(
+                                        _lastAnswerDuration!.inSeconds,
+                                      )
                                     : '',
                                 style: TextStyle(
                                   fontSize: 14,
@@ -320,9 +337,9 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                                 ),
                               ),
                             ),
-                          const Text(
-                            'How well did you know this?',
-                            style: TextStyle(
+                          Text(
+                            l10n.howWellDidYouKnow,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -333,7 +350,7 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                               Expanded(
                                 child: _buildRatingButton(
                                   context,
-                                  'Wrong',
+                                  l10n.wrong,
                                   Colors.red,
                                   ReviewQuality.wrong,
                                 ),
@@ -342,7 +359,7 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                               Expanded(
                                 child: _buildRatingButton(
                                   context,
-                                  'Hard',
+                                  l10n.hard,
                                   Colors.orange,
                                   ReviewQuality.hard,
                                 ),
@@ -351,7 +368,7 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                               Expanded(
                                 child: _buildRatingButton(
                                   context,
-                                  'Good',
+                                  l10n.good,
                                   Colors.blue,
                                   ReviewQuality.good,
                                 ),
@@ -360,7 +377,7 @@ class _StudySessionScreenState extends State<StudySessionScreen> {
                               Expanded(
                                 child: _buildRatingButton(
                                   context,
-                                  'Easy',
+                                  l10n.easy,
                                   Colors.green,
                                   ReviewQuality.easy,
                                 ),

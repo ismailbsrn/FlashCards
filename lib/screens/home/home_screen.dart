@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   Future<void> _performSync() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSyncing = true);
 
     final result = await _syncService.sync();
@@ -71,8 +72,8 @@ class _HomeScreenState extends State<HomeScreen> {
         SnackBar(
           content: Text(
             result['success']
-                ? 'Sync completed successfully'
-                : 'Sync failed: ${result['error']}',
+                ? l10n.syncCompleted
+                : l10n.syncFailed(result['error'] ?? ''),
           ),
           backgroundColor: result['success'] ? Colors.green : Colors.red,
         ),
@@ -99,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _importCollections() async {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     if (authProvider.currentUser == null) return;
 
@@ -120,7 +122,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Imported ${result['collections']} collection(s) with ${result['cards']} card(s)${failedFiles > 0 ? ' ($failedFiles file(s) failed)' : ''}',
+              l10n.importedCollections(
+                result['collections'],
+                result['cards'],
+                failedFiles > 0 ? ' ($failedFiles file(s) failed)' : '',
+              ),
             ),
             backgroundColor: failedFiles > 0 ? Colors.orange : Colors.green,
           ),
@@ -128,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Import failed: ${result['error']}'),
+            content: Text(l10n.importFailed(result['error'] ?? '')),
             backgroundColor: Colors.red,
           ),
         );
@@ -164,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       await settingsProvider.updateSettings(updated);
                     }
                   },
-                  tooltip: isDarkMode ? 'Light Mode' : 'Dark Mode',
+                  tooltip: isDarkMode ? l10n.lightMode : l10n.darkMode,
                 );
               },
             ),
@@ -178,13 +184,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   : const Icon(Icons.sync),
               onPressed: _isSyncing ? null : _performSync,
-              tooltip: 'Sync',
+              tooltip: l10n.syncTooltip,
             ),
           if (_currentIndex == 1)
             IconButton(
               icon: const Icon(Icons.file_upload),
               onPressed: _importCollections,
-              tooltip: 'Import Collections',
+              tooltip: l10n.importCollections,
             ),
         ],
       ),
@@ -229,6 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _showCreateCollectionDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
     final tagController = TextEditingController();
@@ -239,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Create Collection'),
+          title: Text(l10n.createCollection),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -247,9 +254,9 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.name,
+                    border: const OutlineInputBorder(),
                   ),
                   autofocus: true,
                   textCapitalization: TextCapitalization.words,
@@ -257,17 +264,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description (Optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.descriptionOptional,
+                    border: const OutlineInputBorder(),
                   ),
                   maxLines: 3,
                 ),
                 const SizedBox(height: 16),
 
-                const Text(
-                  'Tags',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  l10n.tags,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -275,9 +282,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: TextField(
                         controller: tagController,
-                        decoration: const InputDecoration(
-                          labelText: 'Add tag',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.addTag,
+                          border: const OutlineInputBorder(),
                           isDense: true,
                         ),
                         onSubmitted: (value) {
@@ -322,9 +329,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 const SizedBox(height: 16),
 
-                const Text(
-                  'Color',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  l10n.color,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 ColorPicker(
@@ -349,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(null),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -365,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 }
               },
-              child: const Text('Create'),
+              child: Text(l10n.create),
             ),
           ],
         ),

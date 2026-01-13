@@ -1,3 +1,4 @@
+import 'package:flashcards2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -104,9 +105,10 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
   }
 
   void _startStudySession() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedCollections.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one collection')),
+        SnackBar(content: Text(l10n.pleaseSelectAtLeastOneCollection)),
       );
       return;
     }
@@ -130,9 +132,11 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Study Decks'),
+        title: Text(l10n.selectStudyDecks),
         actions: [
           if (_selectedCollections.isNotEmpty)
             TextButton(
@@ -143,9 +147,9 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(
-                      'Start',
-                      style: TextStyle(
+                  : Text(
+                      l10n.start,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -170,7 +174,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadCollections,
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -189,11 +193,11 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No collections yet',
+                    l10n.noCollections,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  const Text('Create a collection to start studying'),
+                  Text(l10n.createCollectionToStartStudying),
                 ],
               ),
             );
@@ -207,9 +211,9 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _studyAll,
-                    icon: const Icon(Icons.play_circle_filled),
-                    label: const Text(
-                      'Study All Due Cards',
+                    icon: Icon(Icons.play_circle_filled),
+                    label: Text(
+                      l10n.studyAllDueCards,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -246,8 +250,8 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                             ? Icons.filter_alt
                             : Icons.filter_alt_outlined,
                       ),
-                      title: const Text(
-                        'Filters',
+                      title: Text(
+                        l10n.filters,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       trailing: IconButton(
@@ -276,7 +280,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Filter by Card Type:',
+                              l10n.filterByCardType,
                               style: Theme.of(context).textTheme.titleSmall
                                   ?.copyWith(fontWeight: FontWeight.bold),
                             ),
@@ -285,7 +289,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                               spacing: 8,
                               children: [
                                 FilterChip(
-                                  label: const Text('All Cards'),
+                                  label: Text(l10n.all),
                                   selected: _selectedFilter == CardFilter.all,
                                   onSelected: (selected) {
                                     setState(() {
@@ -294,7 +298,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                                   },
                                 ),
                                 FilterChip(
-                                  label: const Text('Due Today'),
+                                  label: Text(l10n.due),
                                   selected: _selectedFilter == CardFilter.due,
                                   onSelected: (selected) {
                                     setState(() {
@@ -303,7 +307,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                                   },
                                 ),
                                 FilterChip(
-                                  label: const Text('New'),
+                                  label: Text(l10n.labelNew),
                                   selected:
                                       _selectedFilter == CardFilter.newCards,
                                   onSelected: (selected) {
@@ -313,7 +317,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                                   },
                                 ),
                                 FilterChip(
-                                  label: const Text('Learning'),
+                                  label: Text(l10n.learning),
                                   selected:
                                       _selectedFilter == CardFilter.learning,
                                   onSelected: (selected) {
@@ -328,7 +332,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                             if (_allTags.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               Text(
-                                'Filter by Tags:',
+                                l10n.filterByTags,
                                 style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
@@ -395,11 +399,11 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No collections match filters',
+                              l10n.noMatchingFilters,
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const SizedBox(height: 8),
-                            const Text('Try adjusting your filters'),
+                            Text(l10n.tryAdjustingFilters),
                           ],
                         ),
                       );
@@ -457,8 +461,11 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                             ),
                             subtitle: Text(
                               cardCount > 0
-                                  ? '$cardCount ${_getFilterLabel()} card${cardCount == 1 ? '' : 's'}'
-                                  : 'No ${_getFilterLabel()} cards',
+                                  ? l10n.cardCountWithFilter(
+                                      cardCount,
+                                      _getFilterLabel(),
+                                    )
+                                  : l10n.noCardsWithFilter(_getFilterLabel()),
                               style: TextStyle(
                                 color: cardCount > 0
                                     ? Colors.grey[600]
@@ -502,7 +509,7 @@ class _StudySelectionScreenState extends State<StudySelectionScreen> {
                               )
                             : const Icon(Icons.play_arrow),
                         label: Text(
-                          'Study ${_selectedCollections.length} deck${_selectedCollections.length == 1 ? '' : 's'}',
+                          l10n.studyDecksCount(_selectedCollections.length),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

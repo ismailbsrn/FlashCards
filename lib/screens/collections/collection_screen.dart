@@ -1,3 +1,4 @@
+import 'package:flashcards2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
@@ -85,22 +86,21 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Future<void> _bulkDeleteCards() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Cards'),
-        content: Text(
-          'Are you sure you want to delete ${_selectedCards.length} card(s)? This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteCards),
+        content: Text(l10n.deleteCardsConfirm(_selectedCards.length)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -119,13 +119,13 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
           },
         );
       }
-      
+
       _exitSelectionMode();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cards deleted successfully'),
+          SnackBar(
+            content: Text(l10n.cardsDeletedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -134,6 +134,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Future<void> _exportCollection() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await _importExportService.exportCollection(
       widget.collection.id,
     );
@@ -143,8 +144,8 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
         SnackBar(
           content: Text(
             result['success']
-                ? 'Exported to ${result['path']}'
-                : 'Export failed: ${result['error']}',
+                ? l10n.exportedTo(result['path'])
+                : l10n.exportFailed(result['error']),
           ),
           backgroundColor: result['success'] ? Colors.green : Colors.red,
         ),
@@ -153,22 +154,21 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Future<void> _deleteCollection() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Collection'),
-        content: Text(
-          'Are you sure you want to delete "${widget.collection.name}"? This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteCollection),
+        content: Text(l10n.deleteCollectionConfirm(widget.collection.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -196,6 +196,8 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Consumer<CollectionProvider>(
       builder: (context, collectionProvider, _) {
         final currentCollection = collectionProvider.collections.firstWhere(
@@ -210,29 +212,29 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
               IconButton(
                 icon: const Icon(Icons.file_download),
                 onPressed: _exportCollection,
-                tooltip: 'Export',
+                tooltip: l10n.exportTooltip,
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'edit',
                     child: Row(
                       children: [
-                        Icon(Icons.edit),
-                        SizedBox(width: 8),
-                        Text('Edit Collection'),
+                        const Icon(Icons.edit),
+                        const SizedBox(width: 8),
+                        Text(l10n.editCollection),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(width: 8),
+                        const Icon(Icons.delete, color: Colors.red),
+                        const SizedBox(width: 8),
                         Text(
-                          'Delete Collection',
-                          style: TextStyle(color: Colors.red),
+                          l10n.deleteCollection,
+                          style: const TextStyle(color: Colors.red),
                         ),
                       ],
                     ),
@@ -261,11 +263,11 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     children: [
                       const Icon(Icons.error, size: 64, color: Colors.red),
                       const SizedBox(height: 16),
-                      Text('Error: ${cardProvider.error}'),
+                      Text(l10n.errorWithMessage(cardProvider.error!)),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _loadCards,
-                        child: const Text('Retry'),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -290,11 +292,11 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                       Icon(Icons.style, size: 100, color: Colors.grey[400]),
                       const SizedBox(height: 16),
                       Text(
-                        'No cards yet',
+                        l10n.noCardsYet,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 8),
-                      const Text('Add your first flashcard'),
+                      Text(l10n.addFirstFlashcard),
                     ],
                   ),
                 );
@@ -307,7 +309,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Search cards...',
+                        hintText: l10n.searchCards,
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
@@ -341,7 +343,10 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                       child: Row(
                         children: [
                           Text(
-                            '${filteredCards.length} of ${allCards.length} cards',
+                            l10n.cardsOfTotal(
+                              filteredCards.length,
+                              allCards.length,
+                            ),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: Colors.grey[600]),
                           ),
@@ -362,12 +367,12 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'No cards found',
+                                  l10n.noCardsFound,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Try a different search term',
+                                  l10n.tryDifferentSearch,
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(color: Colors.grey[600]),
                                 ),
@@ -379,15 +384,22 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                             itemCount: filteredCards.length,
                             itemBuilder: (context, index) {
                               final card = filteredCards[index];
-                              final isSelected = _selectedCards.contains(card.id);
-                              
+                              final isSelected = _selectedCards.contains(
+                                card.id,
+                              );
+
                               return Card(
-                                color: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : null,
+                                color: isSelected
+                                    ? Theme.of(
+                                        context,
+                                      ).colorScheme.primary.withOpacity(0.1)
+                                    : null,
                                 child: ListTile(
                                   leading: _selectionMode
                                       ? Checkbox(
                                           value: isSelected,
-                                          onChanged: (_) => _toggleSelection(card.id),
+                                          onChanged: (_) =>
+                                              _toggleSelection(card.id),
                                         )
                                       : null,
                                   title: Text(card.front),
@@ -407,21 +419,29 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                                             final confirmed = await showDialog<bool>(
                                               context: context,
                                               builder: (context) => AlertDialog(
-                                                title: const Text('Delete Card'),
-                                                content: const Text('Are you sure?'),
+                                                title: Text(l10n.deleteCard),
+                                                content: Text(l10n.areYouSure),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>
-                                                        Navigator.pop(context, false),
-                                                    child: const Text('Cancel'),
+                                                        Navigator.pop(
+                                                          context,
+                                                          false,
+                                                        ),
+                                                    child: Text(l10n.cancel),
                                                   ),
                                                   ElevatedButton(
                                                     onPressed: () =>
-                                                        Navigator.pop(context, true),
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.red,
-                                                    ),
-                                                    child: const Text('Delete'),
+                                                        Navigator.pop(
+                                                          context,
+                                                          true,
+                                                        ),
+                                                    style:
+                                                        ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.red,
+                                                        ),
+                                                    child: Text(l10n.delete),
                                                   ),
                                                 ],
                                               ),
@@ -494,7 +514,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                       );
                     },
                     icon: const Icon(Icons.school),
-                    label: const Text('Study'),
+                    label: Text(l10n.study),
                   ),
                 ),
                 FloatingActionButton(
@@ -520,31 +540,50 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                       TextButton.icon(
                         onPressed: _exitSelectionMode,
                         icon: const Icon(Icons.close),
-                        label: Text('Cancel (${_selectedCards.length})'),
+                        label: Text(
+                          l10n.cancelWithCount(_selectedCards.length),
+                        ),
                       ),
                       IconButton(
                         onPressed: () {
-                          final cardProvider = Provider.of<CardProvider>(context, listen: false);
-                          if (_selectedCards.length == cardProvider.cards.length) {
+                          final cardProvider = Provider.of<CardProvider>(
+                            context,
+                            listen: false,
+                          );
+                          if (_selectedCards.length ==
+                              cardProvider.cards.length) {
                             _unselectAll();
                           } else {
                             _selectAll();
                           }
                         },
                         icon: Icon(
-                          _selectedCards.length == Provider.of<CardProvider>(context, listen: false).cards.length
+                          _selectedCards.length ==
+                                  Provider.of<CardProvider>(
+                                    context,
+                                    listen: false,
+                                  ).cards.length
                               ? Icons.deselect
                               : Icons.select_all,
                         ),
-                        tooltip: _selectedCards.length == Provider.of<CardProvider>(context, listen: false).cards.length
-                            ? 'Unselect all'
-                            : 'Select all',
+                        tooltip:
+                            _selectedCards.length ==
+                                Provider.of<CardProvider>(
+                                  context,
+                                  listen: false,
+                                ).cards.length
+                            ? l10n.unselectAll
+                            : l10n.selectAll,
                       ),
                       IconButton(
-                        onPressed: _selectedCards.isEmpty ? null : _bulkDeleteCards,
+                        onPressed: _selectedCards.isEmpty
+                            ? null
+                            : _bulkDeleteCards,
                         icon: const Icon(Icons.delete),
-                        color: _selectedCards.isEmpty ? Colors.grey : Colors.red,
-                        tooltip: 'Delete selected',
+                        color: _selectedCards.isEmpty
+                            ? Colors.grey
+                            : Colors.red,
+                        tooltip: l10n.deleteSelected,
                       ),
                     ],
                   ),
@@ -556,6 +595,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Future<void> _showEditDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: widget.collection.name);
     final descriptionController = TextEditingController(
       text: widget.collection.description ?? '',
@@ -574,7 +614,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
-            title: const Text('Edit Collection'),
+            title: Text(l10n.editCollection),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -582,25 +622,25 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.name,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Description',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.description,
+                      border: const OutlineInputBorder(),
                     ),
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
 
-                  const Text(
-                    'Tags',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.tags,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -608,9 +648,9 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                       Expanded(
                         child: TextField(
                           controller: tagController,
-                          decoration: const InputDecoration(
-                            labelText: 'Add tag',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: l10n.addTag,
+                            border: const OutlineInputBorder(),
                             isDense: true,
                           ),
                           onSubmitted: (value) {
@@ -639,7 +679,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     ],
                   ),
                   if (tags.isNotEmpty)
-                        Padding(
+                    Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Wrap(
                         spacing: 8,
@@ -657,9 +697,9 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     ),
                   const SizedBox(height: 16),
 
-                  const Text(
-                    'Color',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.color,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   ColorPicker(
@@ -684,7 +724,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(null),
-                child: const Text('Cancel'),
+                child: Text(l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -700,7 +740,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     });
                   }
                 },
-                child: const Text('Save'),
+                child: Text(l10n.save),
               ),
             ],
           ),

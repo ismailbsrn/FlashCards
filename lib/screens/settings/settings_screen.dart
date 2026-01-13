@@ -34,8 +34,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.settings)),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, _) {
           if (settingsProvider.isLoading) {
@@ -44,7 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           final settings = settingsProvider.settings;
           if (settings == null) {
-            return const Center(child: Text('Failed to load settings'));
+            return Center(child: Text(l10n.failedToLoadSettings));
           }
 
           return ListView(
@@ -53,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  AppLocalizations.of(context)!.language,
+                  l10n.language,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -61,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               ListTile(
-                title: Text(AppLocalizations.of(context)!.language),
+                title: Text(l10n.language),
                 leading: const Icon(Icons.language),
                 trailing: DropdownButton<Locale>(
                   value: settingsProvider.locale ?? const Locale('en'),
@@ -87,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  AppLocalizations.of(context)!.studySettings,
+                  l10n.studySettings,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -95,12 +97,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               ListTile(
-                title: const Text('Maximum Reviews Per Day'),
-                subtitle: Text('${settings.maxReviewsPerDay} cards'),
+                title: Text(l10n.maxReviewsPerDay),
+                subtitle: Text(l10n.cardsCount(settings.maxReviewsPerDay)),
                 leading: const Icon(Icons.repeat),
                 onTap: () => _showNumberDialog(
                   context,
-                  'Maximum Reviews Per Day',
+                  l10n.maxReviewsPerDay,
                   settings.maxReviewsPerDay,
                   (value) {
                     final updated = settings.copyWith(maxReviewsPerDay: value);
@@ -109,12 +111,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               ListTile(
-                title: const Text('Maximum New Cards Per Day'),
-                subtitle: Text('${settings.maxNewCardsPerDay} cards'),
+                title: Text(l10n.maxNewCardsPerDay),
+                subtitle: Text(l10n.cardsCount(settings.maxNewCardsPerDay)),
                 leading: const Icon(Icons.new_releases),
                 onTap: () => _showNumberDialog(
                   context,
-                  'Maximum New Cards Per Day',
+                  l10n.maxNewCardsPerDay,
                   settings.maxNewCardsPerDay,
                   (value) {
                     final updated = settings.copyWith(maxNewCardsPerDay: value);
@@ -123,8 +125,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               SwitchListTile(
-                title: const Text('Show Answer Timer'),
-                subtitle: const Text('Display time taken to answer'),
+                title: Text(l10n.showAnswerTimer),
+                subtitle: Text(l10n.displayTimeTakenToAnswer),
                 secondary: const Icon(Icons.timer),
                 value: settings.showAnswerTimer,
                 onChanged: (value) {
@@ -133,10 +135,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
               SwitchListTile(
-                title: const Text('Show Interval Buttons'),
-                subtitle: const Text(
-                  'Display next review intervals under buttons',
-                ),
+                title: Text(l10n.showIntervalButtons),
+                subtitle: Text(l10n.displayNextReviewIntervals),
                 secondary: const Icon(Icons.schedule),
                 value: settings.showIntervalButtons,
                 onChanged: (value) {
@@ -148,7 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  AppLocalizations.of(context)!.appearance,
+                  l10n.appearance,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -156,8 +156,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               SwitchListTile(
-                title: Text(AppLocalizations.of(context)!.darkMode),
-                subtitle: const Text('Use dark theme'),
+                title: Text(l10n.darkMode),
+                subtitle: Text(l10n.useDarkTheme),
                 secondary: const Icon(Icons.dark_mode),
                 value: settings.darkMode,
                 onChanged: (value) {
@@ -166,11 +166,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
               const Divider(),
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Account',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  l10n.account,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Consumer<AuthProvider>(
@@ -181,22 +184,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   return Column(
                     children: [
                       ListTile(
-                        title: const Text('Email'),
+                        title: Text(l10n.email),
                         subtitle: Text(user.email),
                         leading: const Icon(Icons.email),
                       ),
                       if (user.displayName != null)
                         ListTile(
-                          title: const Text('Display Name'),
+                          title: Text(l10n.displayName),
                           subtitle: Text(user.displayName!),
                           leading: const Icon(Icons.person),
                         ),
                       ListTile(
-                        title: const Text('Last Sync'),
+                        title: Text(l10n.lastSyncLabel),
                         subtitle: Text(
                           user.lastSyncAt != null
-                              ? _formatDateTime(user.lastSyncAt!)
-                              : 'Never',
+                              ? _formatDateTime(user.lastSyncAt!, l10n)
+                              : l10n.never,
                         ),
                         leading: const Icon(Icons.sync),
                       ),
@@ -208,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  AppLocalizations.of(context)!.about,
+                  l10n.about,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -216,14 +219,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               ListTile(
-                title: Text(AppLocalizations.of(context)!.version),
+                title: Text(l10n.version),
                 subtitle: const Text('1.0.0'),
                 leading: const Icon(Icons.info),
               ),
-              const ListTile(
-                title: Text('Flashcards App'),
-                subtitle: Text('An offline-first flashcard application'),
-                leading: Icon(Icons.style),
+              ListTile(
+                title: Text(l10n.flashcardsApp),
+                subtitle: Text(l10n.offlineFirstFlashcardApp),
+                leading: const Icon(Icons.style),
               ),
             ],
           );
@@ -238,6 +241,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     int currentValue,
     Function(int) onSave,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: currentValue.toString());
 
     final result = await showDialog<bool>(
@@ -247,19 +251,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Value',
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: l10n.value,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -275,18 +279,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     controller.dispose();
   }
 
-  String _formatDateTime(DateTime dateTime) {
+  String _formatDateTime(DateTime dateTime, AppLocalizations l10n) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.justNow;
     } else if (difference.inHours < 1) {
-      return '${difference.inMinutes} minutes ago';
+      return l10n.minutesAgo(difference.inMinutes);
     } else if (difference.inDays < 1) {
-      return '${difference.inHours} hours ago';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
     }
