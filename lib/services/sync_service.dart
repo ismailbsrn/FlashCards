@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import '../models/sync_queue_item.dart';
@@ -15,7 +16,7 @@ import '../config/app_config.dart';
 
 class SyncService {
   static String get baseUrl => AppConfig.baseUrl;
-  
+
   final SyncRepository _syncRepository = SyncRepository();
   final CollectionRepository _collectionRepository = CollectionRepository();
   final CardRepository _cardRepository = CardRepository();
@@ -40,7 +41,7 @@ class SyncService {
       data: data,
       createdAt: DateTime.now(),
     );
-    
+
     await _syncRepository.addToQueue(item);
   }
 
@@ -50,7 +51,7 @@ class SyncService {
     }
 
     _isSyncing = true;
-    
+
     try {
       final pushResult = await _pushChanges();
       if (!pushResult['success']) {
@@ -71,6 +72,13 @@ class SyncService {
 
       _isSyncing = false;
       return {'success': true};
+    } on SocketException {
+      _isSyncing = false;
+      return {
+        'success': false,
+        'error': 'No internet connection',
+        'offline': true,
+      };
     } catch (e) {
       _isSyncing = false;
       return {'success': false, 'error': e.toString()};
@@ -90,7 +98,7 @@ class SyncService {
           final url = Uri.parse('$baseUrl$endpoint');
 
           http.Response response;
-          
+
           switch (item.operation) {
             case SyncOperation.create:
             case SyncOperation.update:
@@ -110,7 +118,11 @@ class SyncService {
 
           if (response.statusCode == 401) {
             await _authService.logout();
-            return {'success': false, 'error': 'Unauthorized', 'unauthorized': true};
+            return {
+              'success': false,
+              'error': 'Unauthorized',
+              'unauthorized': true,
+            };
           }
 
           if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -148,6 +160,12 @@ class SyncService {
       }
 
       return {'success': true};
+    } on SocketException {
+      return {
+        'success': false,
+        'error': 'No internet connection',
+        'offline': true,
+      };
     } catch (e) {
       return {'success': false, 'error': e.toString()};
     }
@@ -157,7 +175,7 @@ class SyncService {
     try {
       final headers = await _authService.getAuthHeaders();
       final user = await _userRepository.getCurrentUser();
-      
+
       if (user == null) {
         return {'success': false, 'error': 'No user found'};
       }
@@ -166,12 +184,12 @@ class SyncService {
       if (userId == null) {
         return {'success': false, 'error': 'User ID not found'};
       }
-      
+
       final lastSync = user.lastSyncAt?.toIso8601String();
-      final collectionsUrl = lastSync != null 
+      final collectionsUrl = lastSync != null
           ? '$baseUrl/collections?since=$lastSync'
           : '$baseUrl/collections';
-      
+
       final collectionsResponse = await http.get(
         Uri.parse(collectionsUrl),
         headers: headers,
@@ -179,24 +197,35 @@ class SyncService {
 
       if (collectionsResponse.statusCode == 401) {
         await _authService.logout();
-        return {'success': false, 'error': 'Unauthorized', 'unauthorized': true};
+        return {
+          'success': false,
+          'error': 'Unauthorized',
+          'unauthorized': true,
+        };
       }
 
       if (collectionsResponse.statusCode == 200) {
         final collectionsData = json.decode(collectionsResponse.body) as List;
         for (final collectionJson in collectionsData) {
           final remoteCollection = CollectionModel.fromJson(collectionJson);
-          final localCollection = await _collectionRepository.getCollectionById(remoteCollection.id);
-          
-          if (localCollection == null || remoteCollection.updatedAt.isAfter(localCollection.updatedAt)) {
+          final localCollection = await _collectionRepository.getCollectionById(
+            remoteCollection.id,
+          );
+
+          if (localCollection == null ||
+              remoteCollection.updatedAt.isAfter(localCollection.updatedAt)) {
             await _collectionRepository.createCollection(remoteCollection);
           }
         }
       } else {
-        return {'success': false, 'error': 'Failed to pull collections: HTTP ${collectionsResponse.statusCode}'};
+        return {
+          'success': false,
+          'error':
+              'Failed to pull collections: HTTP ${collectionsResponse.statusCode}',
+        };
       }
 
-      final cardsUrl = lastSync != null 
+      final cardsUrl = lastSync != null
           ? '$baseUrl/cards?since=$lastSync'
           : '$baseUrl/cards';
       final cardsResponse = await http.get(
@@ -206,7 +235,11 @@ class SyncService {
 
       if (cardsResponse.statusCode == 401) {
         await _authService.logout();
-        return {'success': false, 'error': 'Unauthorized', 'unauthorized': true};
+        return {
+          'success': false,
+          'error': 'Unauthorized',
+          'unauthorized': true,
+        };
       }
 
       if (cardsResponse.statusCode == 200) {
@@ -214,13 +247,17 @@ class SyncService {
         for (final cardJson in cardsData) {
           final remoteCard = CardModel.fromJson(cardJson);
           final localCard = await _cardRepository.getCardById(remoteCard.id);
-          
-          if (localCard == null || remoteCard.updatedAt.isAfter(localCard.updatedAt)) {
+
+          if (localCard == null ||
+              remoteCard.updatedAt.isAfter(localCard.updatedAt)) {
             await _cardRepository.createCard(remoteCard);
           }
         }
       } else {
-        return {'success': false, 'error': 'Failed to pull cards: HTTP ${cardsResponse.statusCode}'};
+        return {
+          'success': false,
+          'error': 'Failed to pull cards: HTTP ${cardsResponse.statusCode}',
+        };
       }
 
       final reviewLogsUrl = lastSync != null
@@ -233,7 +270,11 @@ class SyncService {
 
       if (reviewLogsResponse.statusCode == 401) {
         await _authService.logout();
-        return {'success': false, 'error': 'Unauthorized', 'unauthorized': true};
+        return {
+          'success': false,
+          'error': 'Unauthorized',
+          'unauthorized': true,
+        };
       }
 
       if (reviewLogsResponse.statusCode == 200) {
@@ -245,10 +286,20 @@ class SyncService {
           } catch (_) {}
         }
       } else {
-        return {'success': false, 'error': 'Failed to pull review logs: HTTP ${reviewLogsResponse.statusCode}'};
+        return {
+          'success': false,
+          'error':
+              'Failed to pull review logs: HTTP ${reviewLogsResponse.statusCode}',
+        };
       }
 
       return {'success': true};
+    } on SocketException {
+      return {
+        'success': false,
+        'error': 'No internet connection',
+        'offline': true,
+      };
     } catch (e) {
       return {'success': false, 'error': e.toString()};
     }

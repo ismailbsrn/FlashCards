@@ -122,6 +122,12 @@ class CardBase(BaseModel):
 
 class CardCreate(CardBase):
     id: Optional[str] = None
+    ease_factor: Optional[float] = None
+    interval: Optional[int] = None
+    repetitions: Optional[int] = None
+    next_review_date: Optional[datetime] = None
+    last_review_date: Optional[datetime] = None
+    version: Optional[int] = None
 
 
 class CardUpdate(BaseModel):
