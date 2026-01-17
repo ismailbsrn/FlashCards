@@ -228,6 +228,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 subtitle: Text(l10n.offlineFirstFlashcardApp),
                 leading: const Icon(Icons.style),
               ),
+              const Divider(),
+              // Danger Zone Section
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l10n.dangerZone,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  l10n.deleteAccount,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                subtitle: Text(l10n.deleteAccountConfirm),
+                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                onTap: () => _showDeleteAccountDialog(context),
+              ),
+              const SizedBox(height: 32),
             ],
           );
         },
@@ -293,6 +316,120 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return l10n.daysAgo(difference.inDays);
     } else {
       return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    }
+  }
+
+  Future<void> _showDeleteAccountDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final passwordController = TextEditingController();
+    bool isDeleting = false;
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.warning, color: Colors.red),
+              const SizedBox(width: 8),
+              Text(
+                l10n.deleteAccount,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.deleteAccountConfirm),
+              const SizedBox(height: 16),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                enabled: !isDeleting,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.password,
+                  hintText: l10n.enterPasswordToConfirm,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: isDeleting
+                  ? null
+                  : () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: isDeleting
+                  ? null
+                  : () async {
+                      if (passwordController.text.isEmpty) {
+                        return;
+                      }
+
+                      setDialogState(() => isDeleting = true);
+
+                      final authProvider = Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      );
+
+                      final success = await authProvider.deleteAccount(
+                        passwordController.text,
+                      );
+
+                      if (success) {
+                        if (dialogContext.mounted) {
+                          Navigator.of(dialogContext).pop(true);
+                        }
+                      } else {
+                        setDialogState(() => isDeleting = false);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                authProvider.error ?? l10n.deleteAccountFailed,
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: isDeleting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(l10n.delete),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    passwordController.dispose();
+
+    if (result == true && mounted) {
+      // Navigate to login screen after successful deletion
+      if (context.mounted) {
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
+      }
     }
   }
 }

@@ -196,7 +196,14 @@
   "justNow": "Az önce",
   "minutesAgo": "{count} dakika önce",
   "hoursAgo": "{count} saat önce",
-  "daysAgo": "{count} gün önce"
+  "daysAgo": "{count} gün önce",
+  "dangerZone": "Tehlikeli Bölge",
+  "deleteAccount": "Hesabı Sil",
+  "deleteAccountConfirm": "Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz. Tüm koleksiyonlarınız, kartlarınız ve çalışma ilerlemeniz kalıcı olarak silinecektir.",
+  "enterPasswordToConfirm": "Onaylamak için şifrenizi girin",
+  "deleteAccountSuccess": "Hesap başarıyla silindi",
+  "deleteAccountFailed": "Hesap silinemedi",
+  "deleting": "Siliniyor..."
 }
 
 

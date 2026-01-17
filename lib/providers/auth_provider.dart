@@ -10,7 +10,7 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   final UserRepository _userRepository = UserRepository();
   final SyncService _syncService = SyncService();
-  
+
   UserModel? _currentUser;
   bool _isLoading = false;
   String? _error;
@@ -30,7 +30,7 @@ class AuthProvider with ChangeNotifier {
       final isAuth = await _authService.isAuthenticated();
       if (isAuth) {
         _currentUser = await _userRepository.getCurrentUser();
-        
+
         // Trigger sync in background after initialization
         _syncInBackground();
       }
@@ -42,7 +42,7 @@ class AuthProvider with ChangeNotifier {
     // Only notify after initialization is complete
     notifyListeners();
   }
-  
+
   /// Sync in background without blocking UI
   void _syncInBackground() {
     Future.delayed(Duration.zero, () async {
@@ -69,26 +69,29 @@ class AuthProvider with ChangeNotifier {
       }
     });
   }
-  
+
   /// Debounced sync - waits for user to stop making changes before syncing
   /// This prevents overwhelming the server with requests while still syncing quickly
   /// Set SYNC_DEBOUNCE_SECONDS=0 in config for immediate sync
   void scheduleDebouncedSync() {
     // Cancel any pending sync
     _debounceSyncTimer?.cancel();
-    
+
     // If debounce is 0, sync immediately
     if (AppConfig.syncDebounceSeconds == 0) {
       _syncInBackground();
       return;
     }
-    
+
     // Schedule a new sync after configured seconds of inactivity
-    _debounceSyncTimer = Timer(Duration(seconds: AppConfig.syncDebounceSeconds), () {
-      _syncInBackground();
-    });
+    _debounceSyncTimer = Timer(
+      Duration(seconds: AppConfig.syncDebounceSeconds),
+      () {
+        _syncInBackground();
+      },
+    );
   }
-  
+
   @override
   void dispose() {
     _debounceSyncTimer?.cancel();
@@ -102,15 +105,15 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final result = await _authService.login(email: email, password: password);
-      
+
       if (result['success']) {
         _currentUser = result['user'];
         _isLoading = false;
         notifyListeners();
-        
+
         // Trigger sync in background after successful login
         _syncInBackground();
-        
+
         return true;
       } else {
         _error = result['error'];
@@ -126,7 +129,11 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> register(String email, String password, String? displayName) async {
+  Future<bool> register(
+    String email,
+    String password,
+    String? displayName,
+  ) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -137,9 +144,36 @@ class AuthProvider with ChangeNotifier {
         password: password,
         displayName: displayName,
       );
-      
+
       if (result['success']) {
         _currentUser = result['user'];
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _error = result['error'];
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount(String password) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _authService.deleteAccount(password: password);
+
+      if (result['success']) {
+        _currentUser = null;
         _isLoading = false;
         notifyListeners();
         return true;
@@ -167,7 +201,7 @@ class AuthProvider with ChangeNotifier {
     try {
       // Fetch fresh user data from the API
       final userData = await _authService.getCurrentUserFromApi();
-      
+
       if (userData != null) {
         _currentUser = userData;
         // Save to local database
@@ -179,7 +213,7 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   /// Trigger sync manually (e.g., when app resumes or device comes online)
   void triggerSync() {
     if (isAuthenticated) {

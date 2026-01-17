@@ -7,7 +7,7 @@ import '../config/app_config.dart';
 
 class AuthService {
   static String get baseUrl => AppConfig.baseUrl;
-  
+
   final UserRepository _userRepository = UserRepository();
   static const String _tokenKey = 'auth_token';
   static const String _userIdKey = 'user_id';
@@ -65,10 +65,10 @@ class AuthService {
         final emailVerified = data['email_verified'] ?? true;
         final message = data['message'];
         final userData = data['user'];
-        
+
         await saveToken(token);
         await saveUserId(userData['id']);
-        
+
         final user = UserModel(
           id: userData['id'],
           email: userData['email'],
@@ -77,7 +77,7 @@ class AuthService {
           isEmailVerified: userData['is_email_verified'] ?? emailVerified,
         );
         await _userRepository.saveUser(user);
-        
+
         return {
           'success': true,
           'user': user,
@@ -86,7 +86,10 @@ class AuthService {
         };
       } else {
         final error = json.decode(response.body);
-        return {'success': false, 'error': error['detail'] ?? 'Registration failed'};
+        return {
+          'success': false,
+          'error': error['detail'] ?? 'Registration failed',
+        };
       }
     } catch (e) {
       return {'success': false, 'error': e.toString()};
@@ -101,10 +104,7 @@ class AuthService {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': email,
-          'password': password,
-        }),
+        body: json.encode({'email': email, 'password': password}),
       );
 
       if (response.statusCode == 200) {
@@ -113,10 +113,10 @@ class AuthService {
         final emailVerified = data['email_verified'] ?? true;
         final message = data['message'];
         final userData = data['user'];
-        
+
         await saveToken(token);
         await saveUserId(userData['id']);
-        
+
         final user = UserModel(
           id: userData['id'],
           email: userData['email'],
@@ -125,7 +125,7 @@ class AuthService {
           isEmailVerified: userData['is_email_verified'] ?? emailVerified,
         );
         await _userRepository.saveUser(user);
-        
+
         return {
           'success': true,
           'user': user,
@@ -141,6 +141,29 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> deleteAccount({required String password}) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/auth/me?password=${Uri.encodeComponent(password)}'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        await logout(); // Clear local data
+        return {'success': true};
+      } else {
+        final error = json.decode(response.body);
+        return {
+          'success': false,
+          'error': error['detail'] ?? 'Failed to delete account',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
   Future<void> logout() async {
     await clearAuth();
     await _userRepository.clearAllData();
@@ -149,7 +172,7 @@ class AuthService {
   Future<Map<String, dynamic>> requestPasswordReset(String email) async {
     try {
       final url = '$baseUrl/auth/forgot-password';
-      
+
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
@@ -167,15 +190,15 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> resetPassword(String token, String newPassword) async {
+  Future<Map<String, dynamic>> resetPassword(
+    String token,
+    String newPassword,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'token': token,
-          'new_password': newPassword,
-        }),
+        body: json.encode({'token': token, 'new_password': newPassword}),
       );
 
       if (response.statusCode == 200) {
@@ -199,7 +222,10 @@ class AuthService {
         return {'success': true, 'message': 'Email verified successfully'};
       } else {
         final error = json.decode(response.body);
-        return {'success': false, 'error': error['detail'] ?? 'Verification failed'};
+        return {
+          'success': false,
+          'error': error['detail'] ?? 'Verification failed',
+        };
       }
     } catch (e) {
       return {'success': false, 'error': e.toString()};
@@ -251,7 +277,10 @@ class AuthService {
         return {'success': true, 'message': 'Password changed successfully'};
       } else {
         final error = json.decode(response.body);
-        return {'success': false, 'error': error['detail'] ?? 'Failed to change password'};
+        return {
+          'success': false,
+          'error': error['detail'] ?? 'Failed to change password',
+        };
       }
     } catch (e) {
       return {'success': false, 'error': e.toString()};
@@ -285,13 +314,16 @@ class AuthService {
       } else if (response.statusCode == 403) {
         final error = json.decode(response.body);
         return {
-          'success': false, 
+          'success': false,
           'email_changed': true,
-          'error': error['detail'] ?? 'Email verification required'
+          'error': error['detail'] ?? 'Email verification required',
         };
       } else {
         final error = json.decode(response.body);
-        return {'success': false, 'error': error['detail'] ?? 'Failed to update profile'};
+        return {
+          'success': false,
+          'error': error['detail'] ?? 'Failed to update profile',
+        };
       }
     } catch (e) {
       return {'success': false, 'error': e.toString()};

@@ -65,8 +65,44 @@ def get_current_user(
     return user
 
 
+def cleanup_expired_registrations(db: Session):
+    """
+    Clean up expired unverified registrations and restore renamed emails.
+    Called during registration to keep the database clean.
+    """
+    import re
+    
+    expired_users = db.query(User).filter(
+        User.is_email_verified == False,
+        User.is_deleted == False,
+        User.email_verification_expires < datetime.utcnow()
+    ).all()
+    
+    for expired_user in expired_users:
+        #deleted_{uuid}_{original_email}
+        pattern = f"deleted_%_{expired_user.email}"
+        old_deleted_user = db.query(User).filter(
+            User.email.like(pattern),
+            User.is_deleted == True
+        ).first()
+        
+        if old_deleted_user:
+            #deleted_{uuid}_{original_email}
+            match = re.match(r'^deleted_[^_]+_(.+)$', old_deleted_user.email)
+            if match:
+                original_email = match.group(1)
+                old_deleted_user.email = original_email
+        
+        db.delete(expired_user)
+    
+    if expired_users:
+        db.commit()
+
+
 @router.post("/register", response_model=TokenWithUser)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
+    
+    cleanup_expired_registrations(db)
     
     if not settings.ENABLE_REGISTRATION:
         raise HTTPException(
@@ -81,22 +117,28 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
         )
     
     existing_user = db.query(User).filter(User.email == user_data.email).first()
-    if existing_user:
+    
+    if existing_user and not existing_user.is_deleted:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
+
+    original_email_backup = None
+    if existing_user and existing_user.is_deleted:
+        original_email_backup = existing_user.email
+        existing_user.email = f"deleted_{existing_user.id}_{original_email_backup}"
+        db.flush()
     
     verification_token = generate_verification_token()
     verification_expires = get_verification_expiry()
     
-    #create new user
     user = User(
         id=str(uuid4()),
         email=user_data.email,
         display_name=user_data.display_name,
         hashed_password=get_password_hash(user_data.password),
-        is_email_verified=not settings.ENABLE_EMAIL_VERIFICATION,  #auto-verify
+        is_email_verified=not settings.ENABLE_EMAIL_VERIFICATION,
         email_verification_token=verification_token,
         email_verification_expires=verification_expires
     )
@@ -117,7 +159,6 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
         data={"sub": user.id}, expires_delta=access_token_expires
     )
     
-    #return with verification status and user info
     message = None
     if settings.ENABLE_EMAIL_VERIFICATION and not user.is_email_verified:
         message = "Registration successful! Please check your email to verify your account."
@@ -180,11 +221,9 @@ async def update_profile(
     
     email_changed = False
     
-    # Update display name if provided
     if user_update.display_name is not None:
         current_user.display_name = user_update.display_name if user_update.display_name else None
     
-    # Update email if provided and different
     if user_update.email is not None and user_update.email != current_user.email:
         existing_user = db.query(User).filter(
             User.email == user_update.email,
@@ -252,6 +291,14 @@ async def verify_email(token: str, db: Session = Depends(get_db)):
     
     if user.is_email_verified:
         return {"message": "Email already verified"}
+    
+    old_deleted_user = db.query(User).filter(
+        User.email.like(f"deleted_%_{user.email}"),
+        User.is_deleted == True
+    ).first()
+    
+    if old_deleted_user:
+        db.delete(old_deleted_user)
     
     user.is_email_verified = True
     user.email_verification_token = None
@@ -388,6 +435,26 @@ async def reset_password(
     db.commit()
     
     return {"message": "Password reset successfully"}
+
+
+@router.delete("/me")
+async def delete_account(
+    password: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Delete the current user's account (soft delete)"""
+    
+    if not verify_password(password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect password"
+        )
+    
+    current_user.is_deleted = True
+    db.commit()
+    
+    return {"message": "Account deleted successfully"}
 
 
 @router.post("/change-password")

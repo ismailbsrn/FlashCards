@@ -1279,6 +1279,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} days ago'**
   String daysAgo(int count);
+
+  /// Danger zone section title
+  ///
+  /// In en, this message translates to:
+  /// **'Danger Zone'**
+  String get dangerZone;
+
+  /// Delete account button text
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// Delete account confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action cannot be undone. All your collections, cards, and study progress will be permanently deleted.'**
+  String get deleteAccountConfirm;
+
+  /// Password confirmation prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password to confirm'**
+  String get enterPasswordToConfirm;
+
+  /// Delete account success message
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully'**
+  String get deleteAccountSuccess;
+
+  /// Delete account failed message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete account'**
+  String get deleteAccountFailed;
+
+  /// Deleting progress text
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting...'**
+  String get deleting;
 }
 
 class _AppLocalizationsDelegate

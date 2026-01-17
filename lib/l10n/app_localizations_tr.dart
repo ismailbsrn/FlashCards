@@ -664,4 +664,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String daysAgo(int count) {
     return '$count gün önce';
   }
+
+  @override
+  String get dangerZone => 'Tehlikeli Bölge';
+
+  @override
+  String get deleteAccount => 'Hesabı Sil';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz. Tüm koleksiyonlarınız, kartlarınız ve çalışma ilerlemeniz kalıcı olarak silinecektir.';
+
+  @override
+  String get enterPasswordToConfirm => 'Onaylamak için şifrenizi girin';
+
+  @override
+  String get deleteAccountSuccess => 'Hesap başarıyla silindi';
+
+  @override
+  String get deleteAccountFailed => 'Hesap silinemedi';
+
+  @override
+  String get deleting => 'Siliniyor...';
 }

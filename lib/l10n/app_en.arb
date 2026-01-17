@@ -514,6 +514,34 @@
         "type": "int"
       }
     }
+  },
+  "dangerZone": "Danger Zone",
+  "@dangerZone": {
+    "description": "Danger zone section title"
+  },
+  "deleteAccount": "Delete Account",
+  "@deleteAccount": {
+    "description": "Delete account button text"
+  },
+  "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone. All your collections, cards, and study progress will be permanently deleted.",
+  "@deleteAccountConfirm": {
+    "description": "Delete account confirmation message"
+  },
+  "enterPasswordToConfirm": "Enter your password to confirm",
+  "@enterPasswordToConfirm": {
+    "description": "Password confirmation prompt"
+  },
+  "deleteAccountSuccess": "Account deleted successfully",
+  "@deleteAccountSuccess": {
+    "description": "Delete account success message"
+  },
+  "deleteAccountFailed": "Failed to delete account",
+  "@deleteAccountFailed": {
+    "description": "Delete account failed message"
+  },
+  "deleting": "Deleting...",
+  "@deleting": {
+    "description": "Deleting progress text"
   }
 }
 

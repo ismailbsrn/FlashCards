@@ -676,4 +676,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String daysAgo(int count) {
     return '$count days ago';
   }
+
+  @override
+  String get dangerZone => 'Danger Zone';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Are you sure you want to delete your account? This action cannot be undone. All your collections, cards, and study progress will be permanently deleted.';
+
+  @override
+  String get enterPasswordToConfirm => 'Enter your password to confirm';
+
+  @override
+  String get deleteAccountSuccess => 'Account deleted successfully';
+
+  @override
+  String get deleteAccountFailed => 'Failed to delete account';
+
+  @override
+  String get deleting => 'Deleting...';
 }
